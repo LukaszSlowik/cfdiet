@@ -12,6 +12,18 @@ const enhancedCreonSettingsApi = creonSettingsApiWithTag.injectEndpoints({
         { type: "CreonSettings", sessionId },
       ],
     }),
+    updateCreonSettings: builder.mutation<CreonZod, CreonZod>({
+      query: (creonSettings) => ({
+        url: `/api/creonsettings`,
+        method: "PUT",
+        body: creonSettings,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["CreonSettings"],
+    }),
   }),
 });
-export const { useGetCreonSettingsQuery } = enhancedCreonSettingsApi;
+export const { useGetCreonSettingsQuery, useUpdateCreonSettingsMutation } =
+  enhancedCreonSettingsApi;

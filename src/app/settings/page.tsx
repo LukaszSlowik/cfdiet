@@ -6,13 +6,18 @@ type Props = {};
 
 export default function page({}: Props) {
   return (
-    <div>
-      <CreonsSettings />
+    <div className="flex flex-col gap-8 mt-10">
       <Link
-        className="no-underline hover:opacity-60 transition duration-300 ease-in-out"
+        className="no-underline hover:opacity-60 transition duration-300 ease-in-out border-b-2"
         href="/products/productsList"
       >
-        Products
+        Lista z produktami
+      </Link>
+      <Link
+        className="no-underline hover:opacity-60 transition duration-300 ease-in-out border-b-2"
+        href="/settings/creonsettings"
+      >
+        Ustawienia dawek kreonu
       </Link>
     </div>
   );
