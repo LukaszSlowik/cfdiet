@@ -15,82 +15,79 @@ type Props = {
 
 export async function GET(req: Request, {}: Props) {
   const { searchParams } = new URL(req.url);
-const session = await getServerSession(authOptions)
-const userId = session?.user.id
+  const session = await getServerSession(authOptions);
+
+  if (!session) return NextResponse.json("Unauthorized", { status: 401 });
+  const userId = session?.user.id;
 
   const queryString = searchParams.get("q");
-  const globalParametr = searchParams.get("global")
-  console.log("Query String:", queryString)
-  console.log("globalParametr:", globalParametr)
+  const globalParametr = searchParams.get("global");
+  console.log("Query String:", queryString);
+  console.log("globalParametr:", globalParametr);
   if (typeof queryString !== "string" || queryString === "") {
     return NextResponse.json([]);
   }
-if(queryString === null)
-{
-  console.log("return:", JSON.stringify([]))
-  return NextResponse.json([]);
+  if (queryString === null) {
+    console.log("return:", JSON.stringify([]));
+    return NextResponse.json([]);
   }
-let products:(Product & {user: User})[] = []
+  let products: (Product & { user: User })[] = [];
 
-if(globalParametr === "true" )
-{
-   products = await prisma.product.findMany({
-    where: {
-          productName: {
-            contains: queryString,
-            mode: "insensitive",
-          },
-    }, include:{
-        user:true,
-    },
-  });
-}
-else{
-  products = await prisma.product.findMany({
-    where: {
-          productName: {
-            contains: queryString,
-            mode: "insensitive",
-          },
-          userId: userId 
-    }, include:{
-        user:true,
-    },
-  });
-}
+  if (globalParametr === "true") {
+    products = await prisma.product.findMany({
+      where: {
+        productName: {
+          contains: queryString,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+  } else {
+    products = await prisma.product.findMany({
+      where: {
+        productName: {
+          contains: queryString,
+          mode: "insensitive",
+        },
+        userId: userId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
 
-
-
-  console.log("products from search:", products)
+  console.log("products from search:", products);
   // const ddd = products.sort((a:Product,b:Product)=> (a.productPopularity.> b.id) ? -1:1);
 
   //const data = await req.json()
 
-  
+  if (userId && products[0]?.productPopularity) {
+    products.sort((a, b) => {
+      const popularityA =
+        a.productPopularity.filter(
+          (a: ProductPopularity) => a.userId == userId
+        )[0]?.popularity || 0;
+      console.log("a.productPopularityA: ", a.productPopularity);
 
- 
-if( userId && products[0]?.productPopularity) {
+      const popularityB =
+        b.productPopularity.filter(
+          (a: ProductPopularity) => a.userId == userId
+        )[0]?.popularity || 0;
+      console.log("productPopularityB: ", b.productPopularity);
 
-  products.sort((a, b) => {
-    const popularityA  = a.productPopularity.filter((a:ProductPopularity) =>  a.userId == userId)[0]?.popularity || 0;
-console.log("a.productPopularityA: ", a.productPopularity)
+      return popularityB - popularityA;
+    });
 
-
-    const popularityB = b.productPopularity.filter((a:ProductPopularity)=> a.userId == userId)[0]?.popularity || 0;
-    console.log("productPopularityB: ", b.productPopularity)
-    
-    return popularityB - popularityA  ;
-  });
-  
-  // Output the sorted array
-  //console.log(products);
-}
-
-  
+    // Output the sorted array
+    //console.log(products);
+  }
 
   console.log("In the api", searchParams.get("q"));
-  if (!products)
-  {
+  if (!products) {
     return NextResponse.json([]);
   }
   //return NextResponse.json({ products: products });

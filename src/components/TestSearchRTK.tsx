@@ -1,18 +1,14 @@
 "use client";
 import useDebounce from "@/hooks/useDebounce";
-//import { useQueries, useQuery } from "@tanstack/react-query";
-import React, { useContext, useRef, useState } from "react";
-
-import { MealDispatch } from "@/context/mealContext";
-
+import { useSearchProductsQuery } from "@/redux/features/products/productSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useState, useEffect, useRef } from "react";
+import NewProduct from "./NewProduct";
 import { add, selectMeal } from "@/redux/features/mealSlice";
 import { MealProduct } from "@/lib/validators/newProduct";
-import { useSearchProductsQuery } from "@/redux/features/products/productSlice";
-
 type Props = {};
 
-export default function SearchProduct({}: Props) {
+const TestSearchRTK = ({}: Props): JSX.Element => {
   const nameInput = useRef<HTMLInputElement>(null);
   const dispatchRedux = useAppDispatch();
   const meal = useAppSelector(selectMeal);
@@ -71,7 +67,7 @@ export default function SearchProduct({}: Props) {
             value={searchQuery}
             ref={nameInput}
             onChange={(event) => setSearchQuery(event.target.value)}
-            className="px-5 py-1 w-5/6 sm:px-5 sm:py-3 flex-1  rounded-full  focus:outline-none focus:ring-[1px] focus:ring-green-700 placeholder:text-zinc-400"
+            className="px-5 py-1 w-5/6 sm:px-5 sm:py-3 flex-1 text-zinc-200 bg-zinc-800 rounded-full focus:bg-black focus:outline-none focus:ring-[1px] focus:ring-green-700 placeholder:text-zinc-400"
             placeholder="szukaj"
           />
         </form>
@@ -88,15 +84,16 @@ export default function SearchProduct({}: Props) {
                 handleAddButton(product);
               }}
               key={product.id}
-              className="flex p-3 gap-4 my-1   justify-between   cursor-pointer  hover:outline-none  hover:border hover:rounded-lg "
+              className="flex p-3 gap-4 my-1   justify-between   cursor-pointer hover:bg-black hover:outline-none hover:ring-[1px] hover:rounded-lg "
             >
-              <div className="text-lg font-normal border-b  text-center pb-1 hover:font-semibold">
+              <div className="text-lg font-light border-b  text-center pb-1">
                 {product.productName}
               </div>
-              <div className="text-xl font-bold"></div>
+              <div className="text-xl font-semibold"></div>
             </div>
           ))}
       </div>
     </>
   );
-}
+};
+export default TestSearchRTK;

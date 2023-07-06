@@ -36,5 +36,9 @@ const mealSlice = createSlice({
 });
 //selectors
 export const selectMeal = (state: RootState) => state.meal;
+//selector with reverse order of products
+export const selectMealReverse = (state: RootState) =>
+  state.meal.slice().reverse();
+
 export const { add, removeOne, removeAll, edit } = mealSlice.actions;
 export default mealSlice.reducer;
