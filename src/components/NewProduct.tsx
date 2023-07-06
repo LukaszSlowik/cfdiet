@@ -48,11 +48,7 @@ export default function NewProduct() {
         <div className="flex justify-center flex-col sm:flex-row gap-4 ">
           <div className="flex  flex-col  gap-2 ">
             <label>Nazwa produktu: </label>
-            <input
-              type="text"
-              {...register("productName")}
-              className="text-black bg-slate-200"
-            />
+            <input type="text" {...register("productName")} className="" />
             {errors.productName && (
               <span className="text-red-400">{errors.productName.message}</span>
             )}
@@ -63,7 +59,7 @@ export default function NewProduct() {
               {...register("fat", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             {errors.fat && (
               <span className="text-red-400">{errors.fat.message}</span>
@@ -76,7 +72,7 @@ export default function NewProduct() {
               {...register("kcal", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             {/* {errors.kcal && (
               <span className="text-red-400">{errors.kcal.message}</span>
@@ -90,7 +86,7 @@ export default function NewProduct() {
               {...register("weightPiece", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             {errors.weightPiece && (
               <span className="text-red-400">{errors.weightPiece.message}</span>
@@ -105,7 +101,7 @@ export default function NewProduct() {
               {...register("weightSmallspoon", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             <label>Waga łyżki: </label>
             <input
@@ -114,7 +110,7 @@ export default function NewProduct() {
               {...register("weightSpoon", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             <label>Waga szklanki: </label>
             <input
@@ -123,7 +119,7 @@ export default function NewProduct() {
               {...register("weightGlass", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
             <label>Waga garści: </label>
             <input
@@ -132,7 +128,7 @@ export default function NewProduct() {
               {...register("weightHandful", {
                 setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
               })}
-              className="text-black bg-slate-200"
+              className=""
             />
           </div>
         </div>
