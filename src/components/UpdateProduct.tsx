@@ -40,8 +40,7 @@ export default function UpdateProduct({ product, queryparam }: Props) {
         />
       </svg>
       <span className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition border-slate-50 ring-[1px] ring-green-700 text-zinc-50 p-2 rounded mt-1 absolute top-full whitespace-nowrap  bg-slate-700 ">
-        {" "}
-        Edit this product{" "}
+        Edytuj ten produkt
       </span>
     </div>
   );

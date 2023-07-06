@@ -108,7 +108,7 @@ export default function ProductsList({}: Props) {
   const columns: Column[] = React.useMemo(
     () => [
       {
-        Header: "Actions",
+        Header: "Akcje",
         id: "actions", // 'id' is required
         Cell: ({ row }) => (
           //   <span >
@@ -136,11 +136,11 @@ export default function ProductsList({}: Props) {
         ),
       },
       {
-        Header: "Product Name",
+        Header: "Produkt",
         accessor: "productName",
       },
       {
-        Header: "Fat",
+        Header: "Tłuszcz",
         accessor: "fat",
       },
       {
@@ -148,27 +148,27 @@ export default function ProductsList({}: Props) {
         accessor: "kcal",
       },
       {
-        Header: "Piece",
+        Header: "Sztuka",
         accessor: "weightPiece",
       },
       {
-        Header: "Handful",
+        Header: "Garść",
         accessor: "weightHandful",
       },
       {
-        Header: "Glass",
+        Header: "Szklanka",
         accessor: "weightGlass",
       },
       {
-        Header: "Spoon",
+        Header: "Łyżka",
         accessor: "weightSpoon",
       },
       {
-        Header: "Small Spoon",
+        Header: "Łyżeczka",
         accessor: "weightSmallspoon",
       },
       {
-        Header: "Owner",
+        Header: "Twórca",
         accessor: "owner",
         Cell: ({ row }) => {
           return (
@@ -239,7 +239,7 @@ export default function ProductsList({}: Props) {
               checked={checked}
               onChange={() => setChecked(!checked)}
             />{" "}
-            <span> Only yours products</span>{" "}
+            <span> Tylko twoje produkty</span>{" "}
           </div>
           <input
             type="search"
@@ -322,7 +322,7 @@ export default function ProductsList({}: Props) {
             >
               {[5, 10, 25, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
+                  Pokaż {pageSize}
                 </option>
               ))}
             </select>

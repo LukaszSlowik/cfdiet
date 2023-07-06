@@ -6,24 +6,32 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ProductSchema } from "@/lib/validators/newProduct";
+import { Product, ProductSchema } from "@/lib/validators/newProduct";
 
-import { Product } from "@prisma/client";
 import { getProductbyId, getProducts, updateProduct } from "@/lib/fetch/fetch";
+import {
+  useEditMutation,
+  useGetQuery,
+} from "@/redux/features/products/productSlice";
+import { Undo2 } from "lucide-react";
+import { Button } from "./ui/button";
 type Props = {
   productId: string;
 };
 
 export default function UpdateProduct({ productId }: Props) {
   const router = useRouter();
-  const search = useSearchParams();  // get parametr from url to predefine search field state
-  const searchQueryDefault = search ? search.get("q") as string : ""; // if parametr exist then get q parametr
+  const search = useSearchParams(); // get parametr from url to predefine search field state
+  const searchQueryDefault = search ? (search.get("q") as string) : ""; // if parametr exist then get q parametr
   const queryClient = useQueryClient();
 
-  const { data: product, isLoading: isLoading2 } = useQuery({
-    queryKey: ["productsList",productId],
-    queryFn: async () => getProductbyId(productId),
-  });
+  // const { data: product, isLoading: isLoading2 } = useQuery({
+  //   queryKey: ["productsList", productId],
+  //   queryFn: async () => getProductbyId(productId),
+  // });
+  //rtk query get product by id
+  const { data: product, isLoading: isLoading2 } = useGetQuery(productId);
+
   let productToUdate: Partial<Product> = {
     id: "",
     productName: "",
@@ -51,86 +59,59 @@ export default function UpdateProduct({ productId }: Props) {
     resolver: zodResolver(ProductSchema),
   });
 
-  const { mutate: UpdateProduct, isLoading } = useMutation({
-    mutationFn: async (product: Product) => {
-      await updateProduct(product,productId)
-    },
-    onMutate: async (product: Product) => {
-      await queryClient.cancelQueries({ queryKey: ["productsList"] });
-      const previousProducts = queryClient.getQueriesData(["productsList"]);
-//       queryClient.setQueriesData(["productsList"], (old: any) =>
-// {
-//       if(old){
-//         old?.map((obj: any) => {
-//           console.log(obj.id, " ", productId);
-//           if (obj.id === productId) {
-//             console.log("bedzie zminiony produkt:", product);
-//             return product;
-//           } else return obj;
-//         })
-//       }}
-      
-      // );
-      // return { previousProducts };
-    },
-    // onError: (err, product, context) => {
-    //   queryClient.setQueryData(["productsList"], context?.previousProducts);
-    // },
-    onSettled: async (data,err,product) => {
-      console.log("onSuccess: productsList")
+  // const { mutate: UpdateProduct, isLoading } = useMutation({
+  //   mutationFn: async (product: Product) => {
+  //     await updateProduct(product, productId);
+  //   },
+  //   onMutate: async (product: Product) => {
+  //     await queryClient.cancelQueries({ queryKey: ["productsList"] });
+  //     const previousProducts = queryClient.getQueriesData(["productsList"]);
+  //   },
+  //   // onError: (err, product, context) => {
+  //   //   queryClient.setQueryData(["productsList"], context?.previousProducts);
+  //   // },
+  //   onSettled: async (data, err, product) => {
+  //     console.log("onSuccess: productsList");
 
-      queryClient.invalidateQueries({ queryKey: ["productsList"] });
-      
+  //     queryClient.invalidateQueries({ queryKey: ["productsList"] });
 
-      //router.push("/products/productsList");
-      router.back()
-    },
-  });
+  //     //router.push("/products/productsList");
+  //     router.back();
+  //   },
+  // });
+
+  //rtk query update product
+  const [UpdateProduct, { isLoading, isSuccess }] = useEditMutation();
+  if (isSuccess) {
+    router.back();
+  }
 
   const submitData = (data: Partial<Product>) => {
     //console.log("Works", data);
     UpdateProduct(data as Product);
   };
 
-  if (isLoading2 ) {
-    return <div>Is Ładuje...</div>;
+  if (isLoading2) {
+    return <div>Ładuje...</div>;
   }
 
   if (!product) {
-    return <div>No product</div>;
+    return <div>Nie znaleziono produktu</div>;
   }
 
   return (
     <div className="flex justify-center flex-col">
       <div>
-        <svg
-          onClick={() => router.back()}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6 cursor-pointer"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
-          />
-        </svg>
+        <Undo2 onClick={() => router.back()} className="cursor-pointer mb-2" />
       </div>
       <form
         onSubmit={handleSubmit(submitData)}
-        className="flex gap-4 flex-col   w-md "
+        className="flex gap-4 flex-col w-md "
       >
         <div className="flex justify-center flex-col sm:flex-row gap-4 ">
           <div className="flex  flex-col  gap-2 ">
-            <label>Product name: </label>
-            <input
-              type="text"
-              {...register("productName")}
-              className="text-black"
-            />
+            <label>Nazwa produkt: </label>
+            <input type="text" {...register("productName")} className="" />
             {errors.productName && (
               <span className="text-red-400">{errors.productName.message}</span>
             )}
@@ -138,64 +119,100 @@ export default function UpdateProduct({ productId }: Props) {
             <input
               type="number"
               step=".01"
-              
-              {...register("kcal", { valueAsNumber: true })}
-              className="text-black"
+              {...register("kcal", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=""
             />
             {errors.kcal && (
               <span className="text-red-400">{errors.kcal.message}</span>
             )}
-            <label>Fat: </label>
+            <label>Tłuszcz: </label>
             <input
               type="number"
               step=".01"
-              {...register("fat", { valueAsNumber: true })}
-              className="text-black"
+              {...register("fat", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
+              className=""
             />
             {errors.fat && (
               <span className="text-red-400">{errors.fat.message}</span>
             )}
-            <label>Weight of one piece:</label>
+            <label>Waga sztuki:</label>
 
             <input
               type="number"
               step=".01"
-              {...register("weightPiece", { valueAsNumber: true })}
-              className="text-black bg-slate-200"
+              {...register("weightPiece", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=" "
             />
           </div>
 
           <div className="flex  flex-col  gap-2 ">
-            <label>Weight of one small spoon: </label>
+            <label>Waga łyżeczki: </label>
             <input
               type="number"
               step=".01"
-              {...register("weightSmallspoon", { valueAsNumber: true })}
-              className="text-black bg-slate-200"
+              {...register("weightSmallspoon", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=" "
             />
-            <label>Weight of one spoon: </label>
+            <label>Waga łyżki: </label>
             <input
               type="number"
               step="0.01"
-              {...register("weightSpoon", { valueAsNumber: true })}
-              className="text-black bg-slate-200"
+              {...register("weightSpoon", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=" "
             />
-            <label>Weight of one glass: </label>
+            <label>Waga szklanki: </label>
             <input
               type="number"
               step="0.01"
-              {...register("weightGlass", { valueAsNumber: true })}
-              className="text-black bg-slate-200"
+              {...register("weightGlass", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=" "
             />
-            <label>Weight of one handful: </label>
+            <label>Waga garści: </label>
             <input
               type="number"
               step="0.01"
-              {...register("weightHandful", { valueAsNumber: true })}
-              className="text-black bg-slate-200"
+              {...register("weightHandful", {
+                setValueAs: (v) =>
+                  v === "" || Number.isNaN(v) || v === null
+                    ? undefined
+                    : parseFloat(v),
+              })}
+              className=" "
             />
 
-            <input type="submit" className="cursor-pointer" />
+            <button
+              type="submit"
+              className="cursor-pointer bg-slate-600 text-slate-50 mt-4 p-2 rounded-md hover:bg-slate-700"
+            >
+              Zapisz
+            </button>
           </div>
         </div>
       </form>

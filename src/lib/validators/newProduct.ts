@@ -8,7 +8,7 @@ export const ProductSchema = z.object({
       message: "Username must be at least 2 characters.",
     })
     .max(100, { message: "Username must be at max 100 characters." }),
-  kcal: z.any().optional(),
+  kcal: z.number().step(0.01).optional(),
   fat: z
     .number({ required_error: "Fat need to be added .If no than put 0" })
     .step(0.01, { message: "Fat must be at added. If no than put 0" }),
@@ -38,14 +38,6 @@ export const MealProductSchema = ProductSchema.extend({
       message: "unit must be at least 2 characters.",
     })
     .max(100, { message: "unit must be at max 100 characters." }),
-  // weightUnits: z.object({
-  //   weightPiece: z.number().step(0.01),
-  //   weightHandful: z.number().step(0.01),
-  //   weightGlass: z.number().step(0.01),
-  //   weightSpoon: z.number().step(0.01),
-  //   weightSmallspoon: z.number().step(0.01),
-  //   g: z.number().step(0.01),
-  // }),
 }).extend({ weightUnits: WeightUnitsSchema });
 export const WeightKeysSchema = z.enum([
   "weightPiece",

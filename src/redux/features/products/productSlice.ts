@@ -31,6 +31,11 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
         { type: "Product", filterProducts },
       ],
     }),
+    get: builder.query<Product, string>({
+      query: (id) => `/api/products/product/${id}`,
+      providesTags: (result, error, id) => [{ type: "Product", id }],
+    }),
+
     add: builder.mutation({
       query: (product) => ({
         url: `/api/products/newProduct`,
@@ -42,6 +47,18 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Product", id: "LIST" }],
     }),
+    edit: builder.mutation<Product, Product>({
+      query: (product) => ({
+        url: `/api/products/product/${product.id}`,
+        method: "PUT",
+        body: product,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Product"],
+    }),
+
     delete: builder.mutation<void, string>({
       query: (id) => ({
         url: `/api/products/product/${id}`,
@@ -56,8 +73,10 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
 });
 export const {
   useTestQuery,
+  useGetQuery,
   useSearchProductsQuery,
   useAddMutation,
   useFilterProductsQuery,
   useDeleteMutation,
+  useEditMutation,
 } = enhancedProductApi;

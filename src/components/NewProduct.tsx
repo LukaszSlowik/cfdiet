@@ -47,7 +47,7 @@ export default function NewProduct() {
       >
         <div className="flex justify-center flex-col sm:flex-row gap-4 ">
           <div className="flex  flex-col  gap-2 ">
-            <label>Product name: </label>
+            <label>Nazwa produktu: </label>
             <input
               type="text"
               {...register("productName")}
@@ -56,7 +56,7 @@ export default function NewProduct() {
             {errors.productName && (
               <span className="text-red-400">{errors.productName.message}</span>
             )}
-            <label>Fat: </label>
+            <label>Tłuszcz: </label>
             <input
               type="number"
               step="0.01"
@@ -82,7 +82,7 @@ export default function NewProduct() {
               <span className="text-red-400">{errors.kcal.message}</span>
             )} */}
 
-            <label>Weight of one piece:</label>
+            <label>Waga sztuki:</label>
 
             <input
               type="number"
@@ -98,7 +98,7 @@ export default function NewProduct() {
           </div>
 
           <div className="flex  flex-col  gap-2 ">
-            <label>Weight of one small spoon: </label>
+            <label>Waga łyżeczki: </label>
             <input
               type="number"
               step=".01"
@@ -107,7 +107,7 @@ export default function NewProduct() {
               })}
               className="text-black bg-slate-200"
             />
-            <label>Weight of one spoon: </label>
+            <label>Waga łyżki: </label>
             <input
               type="number"
               step=".01"
@@ -116,7 +116,7 @@ export default function NewProduct() {
               })}
               className="text-black bg-slate-200"
             />
-            <label>Weight of one glass: </label>
+            <label>Waga szklanki: </label>
             <input
               type="number"
               step=".01"
@@ -125,7 +125,7 @@ export default function NewProduct() {
               })}
               className="text-black bg-slate-200"
             />
-            <label>Weight of one handful: </label>
+            <label>Waga garści: </label>
             <input
               type="number"
               step=".01"
@@ -136,7 +136,12 @@ export default function NewProduct() {
             />
           </div>
         </div>
-        <input type="submit" className="cursor-pointer" />
+        <button
+          type="submit"
+          className="cursor-pointer bg-slate-600 text-slate-50 mt-4 p-2 rounded-md hover:bg-slate-700"
+        >
+          Zapisz
+        </button>
       </form>
     </div>
   );
