@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+//need to open node_modules\.prisma\client\index.d.ts in vs
+//save
+// and then prisma generate to update typescript
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  resetToken  String?   @unique
+  accounts      Account[]
+  sessions      Session[]
+  //tweets        Tweet[]
+  products      Product[]
+  posts         Post[]
+  meals         Meal[]
+  creon         Creon?
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// model Tweet {
+//   id     String @id @default(auto()) @map("_id") @db.ObjectId
+//   body   String
+//   likes  Int
+//   user   User   @relation(fields: [userId], references: [id])
+//   userId String @db.ObjectId
+// }
+model Product {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  productName       String
+  kcal              Float?
+  fat               Float?
+  weightPiece       Float?
+  weightHandful     Float?
+  weightGlass       Float?
+  weightSpoon       Float?
+  weightSmallspoon  Float?
+  productPopularity ProductPopularity[] @unique
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+}
+
+// model ProductPopularity {
+//   id        String  @id @default(auto()) @map("_id") @db.ObjectId
+//   userId    String
+//   popularity Float
+//   product   Product @relation(fields: [productId], references: [id])
+//   productId String  @db.ObjectId @unique
+// }
+
+model Test {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  test String
+}
+
+model Creon {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  unitsPerTablet  Float
+  unitsPerFatGram Float
+  user            User   @relation(fields: [userId], references: [id])
+  userId          String @unique @db.ObjectId
+}
+
+model Post {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  body     String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String @db.ObjectId
+}
+
+model Meal {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  productName String?
+  amount      Float?
+  fat         Float?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.ObjectId
+}
+
+model SearchQuery {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  query String
+}
+
+type ProductPopularity {
+  userId String?
+  popularity Float?
+
+
+}
