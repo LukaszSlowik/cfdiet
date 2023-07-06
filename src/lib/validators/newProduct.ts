@@ -17,6 +17,7 @@ export const ProductSchema = z.object({
   weightGlass: z.number().step(0.01).optional(),
   weightSpoon: z.number().step(0.01).optional(),
   weightSmallspoon: z.number().step(0.01).optional(),
+  userId: z.string().optional(),
 });
 
 export const WeightUnitsSchema = z.object({

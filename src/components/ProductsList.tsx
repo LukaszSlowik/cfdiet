@@ -4,9 +4,17 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DeleteProduct from "@/components/DeleteProduct";
-import { Product, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import UpdateProduct from "@/components/UpdateProduct";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+} from "lucide-react";
 import {
   Column,
   useTable,
@@ -39,28 +47,21 @@ import {
 import RowActions from "@/components/rowsActionsForTable";
 import ProductsFilter from "@/components/ProductsFilter";
 import useDebounce from "@/hooks/useDebounce";
-import next from "next/types";
 import Image from "next/image";
 import { getSession, useSession } from "next-auth/react";
 import DuplicateProduct from "@/components/DuplicateProduct";
+import {
+  useFilterProductsQuery,
+  useSearchProductsQuery,
+} from "@/redux/features/products/productSlice";
+import { Product } from "@/lib/validators/newProduct";
 
 //export const dynamic = 'force-dynamic'    =  export const revalidate = 0
 //export const dynamic = 'force-dynamic'
 //export const revalidate = 0
 
 type Props = {};
-// async function getData() {
-//   const { products } = await getProducts();
-//   if (!products) {
-//     throw new Error("failed to fetch data");
-//   }
-//   return products;
-// }
 
-//export const revalidate = 0; // will update a list to have new list when Navigate after New Form is ok
-
-// export const revalidate = 0
-type ProductUser = Partial<Product> & Partial<User>;
 export default function ProductsList({}: Props) {
   const search = useSearchParams(); // get parametr from url to predefine search field state
   const searchQueryDefault = search ? (search.get("q") as string) : ""; // if parametr exist then get q parametr
@@ -72,12 +73,17 @@ export default function ProductsList({}: Props) {
 
   const defaultData = React.useMemo(() => [], []);
   const debauncedSearchTerm: string = useDebounce(searchQuery, 600);
+  const [encodedSearchQuery, setEncodedSearchQuery] =
+    useState<string>(debauncedSearchTerm);
   const router = useRouter();
 
   useEffect(() => {
     if (debauncedSearchTerm) {
+      setEncodedSearchQuery(encodeURI(debauncedSearchTerm));
       router.push(
-        `/products/productsList?q=${debauncedSearchTerm}&global=${!checked}`
+        `/products/productsList?q=${encodeURI(
+          debauncedSearchTerm
+        )}&global=${!checked}`
       );
     }
   }, [debauncedSearchTerm, checked, router]);
@@ -87,34 +93,17 @@ export default function ProductsList({}: Props) {
   console.log(debauncedSearchTerm);
 
   const { data: session } = useSession();
-  //const userId = session?.user.id
-  //console.log("userId: ", userId)
-  //const headersList = headers();
-  // const {products} = await getProducts();
 
+  //rtk query
   const {
     data: products,
     error,
     refetch,
     isError,
     isLoading,
-  } = useQuery<any>({
-    queryKey: ["productsList", debauncedSearchTerm, { global: checked }],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/searchProducts?q=${debauncedSearchTerm}&global=${!checked}`
-      );
-      console.log("response from search:", response);
-      return await response.json();
-    },
-    //keepPreviousData: true,
-    //refetchOnMount: true,
+  } = useFilterProductsQuery({ q: encodedSearchQuery, global: !checked });
 
-    staleTime: 60000,
-  });
-
-  const data: any[] = React.useMemo(() => products, [products]);
-  //const data = React.useMemo(() => [{productName:"sss", fat:"tsasfsa"}], []);
+  const data: Product[] | undefined = React.useMemo(() => products, [products]);
 
   const columns: Column[] = React.useMemo(
     () => [
@@ -237,21 +226,8 @@ export default function ProductsList({}: Props) {
   return (
     <section className="">
       <div className="flex flex-col justify-center  content-center ">
-        <Link href="/products/newProduct">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-10 h-10 cursor-pointer text-green-700"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
+        <Link href="/products/newProduct" className="ml-8 ">
+          <Plus className="w-8 h-8 text-green-600" />
         </Link>
         <form
           className="flex justify-center content-center w-1/2 ml-10 mb-10 flex-col sm:flex-row  items-center gap-8"
@@ -293,38 +269,12 @@ export default function ProductsList({}: Props) {
                         <span key={i}>
                           {column.isSorted ? (
                             column.isSortedDesc ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
-                                />
-                              </svg>
+                              <ArrowDown />
                             ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"
-                                />
-                              </svg>
+                              <ArrowUp />
                             )
                           ) : (
-                            ""
+                            <ArrowUpDown className="opacity-10 w-4 h-4" />
                           )}
                         </span>
                       </div>
@@ -354,42 +304,16 @@ export default function ProductsList({}: Props) {
             <button
               onClick={() => nextPage()}
               disabled={!canNextPage}
-              className="disabled:text-slate-600"
+              className="disabled:opacity-20"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+              <ArrowRight />
             </button>
             <button
               onClick={() => previousPage()}
               disabled={!canPreviousPage}
-              className="disabled:text-slate-600"
+              className="disabled:opacity-20"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                />
-              </svg>
+              <ArrowLeft />
             </button>
             <select
               className="text-black"

@@ -1,6 +1,10 @@
 import { Product } from "@/lib/validators/newProduct";
 import { apiSlice } from "../api/apiSlice";
 
+type ProductsQuery = {
+  q: string;
+  global?: boolean;
+};
 const productApiWithTag = apiSlice.enhanceEndpoints({
   addTagTypes: ["Product"],
 });
@@ -21,6 +25,12 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
       //     return response.reverse();
       //     },
     }),
+    filterProducts: builder.query<Product[], ProductsQuery>({
+      query: ({ q, global }) => `/api/searchProducts?q=${q}&global=${global}`,
+      providesTags: (result, error, filterProducts) => [
+        { type: "Product", filterProducts },
+      ],
+    }),
     add: builder.mutation({
       query: (product) => ({
         url: `/api/products/newProduct`,
@@ -32,7 +42,22 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Product", id: "LIST" }],
     }),
+    delete: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/api/products/product/${id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Product"],
+    }),
   }),
 });
-export const { useTestQuery, useSearchProductsQuery, useAddMutation } =
-  enhancedProductApi;
+export const {
+  useTestQuery,
+  useSearchProductsQuery,
+  useAddMutation,
+  useFilterProductsQuery,
+  useDeleteMutation,
+} = enhancedProductApi;
