@@ -3,16 +3,19 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Undo2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, get } from "react-hook-form";
 import { Product, ProductSchema } from "@/lib/validators/newProduct";
 import ObjectID from "bson-objectid";
+import { useAddMutation } from "@/redux/features/products/productSlice";
 export default function NewProduct() {
   const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -20,65 +23,22 @@ export default function NewProduct() {
 
   const router = useRouter();
 
-  const { mutate: AddProduct, isLoading } = useMutation({
-    mutationFn: async (product: Product) => {
-      const response = await fetch("/api/products/newProduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
-      });
+  //rtk query add product
+  const [mutate, { isLoading, isSuccess }] = useAddMutation();
 
-      return response.body;
-    },
-    // onMutate: async (product: Product) => {
-    //   await queryClient.cancelQueries({ queryKey: ["productsList", product.productName] });
-
-    //   console.log("id created xxxxxxxxxxxxxxxxxxxxxxxxxxxxx: ", product.id);
-
-    //   const previousProducts = queryClient.getQueriesData(["productsList",product.productName]);
-    //   queryClient.setQueriesData(["productsList",product.productName], (old: any) => [
-    //     ...old,
-    //     product,
-    //   ]);
-    //   return { previousProducts };
-    // },
-    // onError: (err, product, context) => {
-    //   queryClient.setQueryData(["productsList", product.productName], context?.previousProducts);
-    // },
-    onSettled:  async (data,err,product) => {
-      queryClient.invalidateQueries({ queryKey: ["productsList"] });
-      const encodedSearchQuery = encodeURI(product.productName);
-      router.push(`/products/productsList?q=${encodedSearchQuery}&global=true`)
-    },
-   // onSuccess: () => router.push(`/products/productsList`),
-  });
+  if (isSuccess) {
+    const encodedSearchQuery = encodeURI(getValues("productName"));
+    router.push(`/products/productsList?q=${encodedSearchQuery}&global=true`);
+  }
 
   const submitData = (data: Product) => {
-    // data.id = ObjectID().toHexString();
-    // console.log("data id: ", data.id);
-    AddProduct(data);
+    mutate(data);
   };
 
   return (
     <div className="flex justify-center flex-col ">
       <div>
-        <svg
-          onClick={() => router.back()}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6 cursor-pointer"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
-          />
-        </svg>
+        <Undo2 className="cursor-pointer" onClick={() => router.back()} />
       </div>
 
       <form
@@ -96,37 +56,45 @@ export default function NewProduct() {
             {errors.productName && (
               <span className="text-red-400">{errors.productName.message}</span>
             )}
-             <label>Fat: </label>
+            <label>Fat: </label>
             <input
               type="number"
               step="0.01"
-              
-              {...register("fat", { valueAsNumber: true })}
+              {...register("fat", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
+            {errors.fat && (
+              <span className="text-red-400">{errors.fat.message}</span>
+            )}
 
             <label>Kcal: </label>
             <input
               type="number"
               step="0.01"
-              
-              {...register("kcal", { valueAsNumber: true })}
+              {...register("kcal", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
             {/* {errors.kcal && (
               <span className="text-red-400">{errors.kcal.message}</span>
             )} */}
-           
-          
+
             <label>Weight of one piece:</label>
 
             <input
               type="number"
-              
               step=".01"
-              {...register("weightPiece", { valueAsNumber: true})}
+              {...register("weightPiece", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
+            {errors.weightPiece && (
+              <span className="text-red-400">{errors.weightPiece.message}</span>
+            )}
           </div>
 
           <div className="flex  flex-col  gap-2 ">
@@ -134,28 +102,36 @@ export default function NewProduct() {
             <input
               type="number"
               step=".01"
-              {...register("weightSmallspoon", { valueAsNumber: true})}
+              {...register("weightSmallspoon", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
             <label>Weight of one spoon: </label>
             <input
               type="number"
               step=".01"
-              {...register("weightSpoon", { valueAsNumber: true})}
+              {...register("weightSpoon", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
             <label>Weight of one glass: </label>
             <input
               type="number"
               step=".01"
-              {...register("weightGlass", { valueAsNumber: true})}
+              {...register("weightGlass", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
             <label>Weight of one handful: </label>
             <input
               type="number"
               step=".01"
-              {...register("weightHandful", { valueAsNumber: true})}
+              {...register("weightHandful", {
+                setValueAs: (v) => (v === "" ? undefined : parseFloat(v)),
+              })}
               className="text-black bg-slate-200"
             />
           </div>

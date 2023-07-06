@@ -188,7 +188,7 @@ export default function MealTable({}: Props) {
                           }
                         />
                       </SelectTrigger>
-                      <SelectContent className="bg-transparent">
+                      <SelectContent>
                         <SelectItem value="g">{unitsForSelect["g"]}</SelectItem>
                         {element.weightUnits.weightPiece > 0 && (
                           <SelectItem value="weightPiece">

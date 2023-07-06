@@ -9,7 +9,7 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
     test: builder.query({
       query: () => "/api/products/getProducts",
 
-      providesTags: ["Product"],
+      providesTags: [{ type: "Product", id: "LIST" }],
     }),
     searchProducts: builder.query<Product[], string>({
       query: (searchTerm) => `/api/searchProducts?q=${searchTerm}`,
@@ -21,6 +21,18 @@ const enhancedProductApi = productApiWithTag.injectEndpoints({
       //     return response.reverse();
       //     },
     }),
+    add: builder.mutation({
+      query: (product) => ({
+        url: `/api/products/newProduct`,
+        method: "POST",
+        body: product,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
   }),
 });
-export const { useTestQuery, useSearchProductsQuery } = enhancedProductApi;
+export const { useTestQuery, useSearchProductsQuery, useAddMutation } =
+  enhancedProductApi;

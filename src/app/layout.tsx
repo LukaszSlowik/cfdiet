@@ -18,10 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-slate-100">
+    <html lang="en" className="bg-slate-50">
       <Provider>
         <body
-          className={`${inter.className} w-full overflow-x-hidden  bg-slate-100`}
+          className={`${inter.className} w-full overflow-x-hidden  bg-slate-50`}
         >
           {/* @ts-expect-error server component */}
           <AppNavbar />

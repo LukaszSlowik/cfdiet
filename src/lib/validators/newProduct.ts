@@ -9,7 +9,9 @@ export const ProductSchema = z.object({
     })
     .max(100, { message: "Username must be at max 100 characters." }),
   kcal: z.any().optional(),
-  fat: z.number().step(0.01),
+  fat: z
+    .number({ required_error: "Fat need to be added .If no than put 0" })
+    .step(0.01, { message: "Fat must be at added. If no than put 0" }),
   weightPiece: z.number().step(0.01).optional(),
   weightHandful: z.number().step(0.01).optional(),
   weightGlass: z.number().step(0.01).optional(),
