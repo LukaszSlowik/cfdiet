@@ -118,7 +118,7 @@ export default function SearchProduct({}: Props) {
               placeholder="szukaj"
             />
             {(isLoadingSearchProducts || isFetching) && (
-              <Loader className=" absolute  top-[20%]  left-[110%] w-10 h-10 animate-spin-slow   text-blue-800" />
+              <Loader className=" absolute  top-[37%]  left-[70%] w-4 h-4 animate-spin-slow   text-blue-800" />
             )}
           </div>
         </form>
