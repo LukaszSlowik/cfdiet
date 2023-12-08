@@ -28,7 +28,7 @@ export default function RootLayout({
           <div className="flex flex-col gap-10 items-center p-6 ">
             <div className="flex flex-col items-center ">{children}</div>
           </div>
-          <ReactQueryDevtools />
+          {/* <ReactQueryDevtools /> */}
         </body>
       </Provider>
     </html>

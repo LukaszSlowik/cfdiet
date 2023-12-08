@@ -225,15 +225,15 @@ export default function ProductsList({}: Props) {
   //console.log("user image: " ,products?.length && (products[0] as any).user.image as string)
   return (
     <section className="">
-      <div className="flex flex-col justify-center  content-center ">
-        <Link href="/products/newProduct" className="ml-8 ">
-          <Plus className="w-8 h-8 text-green-600" />
+      <div className="flex flex-col  justify-center  content-center ">
+        <Link href="/products/newProduct" className=" ">
+          <Plus className="w-8 h-8 text-green-600 mx-4" />
         </Link>
         <form
-          className="flex justify-center content-center w-1/2 ml-10 mb-10 flex-col sm:flex-row  items-center gap-8"
+          className="flex      mx-4 mb-5 flex-col sm:flex-row   gap-8"
           onSubmit={(event) => event.preventDefault()}
         >
-          <div>
+          <div className="">
             <input
               type="checkbox"
               checked={checked}
@@ -250,8 +250,8 @@ export default function ProductsList({}: Props) {
               //router.push(`/products/productsList?q=${encodedSearchQuery}`);
               setSearchQuery(event.target.value);
             }}
-            className="px-5 py-1 md:w-5/6 md:px-5 sm:py-3 flex-1  rounded-full  focus:outline-none focus:ring-[1px] focus:ring-green-700 placeholder:text-zinc-400"
-            placeholder="Search a product"
+            className="px-5 py-1 md:w-5/6 md:px-5 w-full max-w-md  sm:py-3 flex-1  rounded-md  focus:outline-none focus:ring-[1px] focus:ring-green-700 placeholder:text-zinc-400"
+            placeholder="Szukaj produktu"
           />
         </form>
         <div className="flex flex-col px-8 ">

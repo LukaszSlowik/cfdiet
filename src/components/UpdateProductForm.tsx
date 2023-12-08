@@ -1,20 +1,17 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Product, ProductSchema } from "@/lib/validators/newProduct";
 
-import { getProductbyId, getProducts, updateProduct } from "@/lib/fetch/fetch";
 import {
   useEditMutation,
   useGetQuery,
 } from "@/redux/features/products/productSlice";
 import { Undo2 } from "lucide-react";
-import { Button } from "./ui/button";
+
 type Props = {
   productId: string;
 };
@@ -23,32 +20,8 @@ export default function UpdateProduct({ productId }: Props) {
   const router = useRouter();
   const search = useSearchParams(); // get parametr from url to predefine search field state
   const searchQueryDefault = search ? (search.get("q") as string) : ""; // if parametr exist then get q parametr
-  const queryClient = useQueryClient();
 
-  // const { data: product, isLoading: isLoading2 } = useQuery({
-  //   queryKey: ["productsList", productId],
-  //   queryFn: async () => getProductbyId(productId),
-  // });
-  //rtk query get product by id
   const { data: product, isLoading: isLoading2 } = useGetQuery(productId);
-
-  let productToUdate: Partial<Product> = {
-    id: "",
-    productName: "",
-    kcal: 0,
-    fat: 0,
-    userId: "",
-    weightGlass: 0,
-    weightHandful: 0,
-    weightPiece: 0,
-    weightSmallspoon: 0,
-    weightSpoon: 0,
-  };
-
-  // productToUdate = (products as Product[])?.filter(
-  //   (product: any) => product?.id === productId
-  // )[0];
-  //console.log("Product to update: ", productToUdate)
 
   const {
     register,
@@ -59,28 +32,6 @@ export default function UpdateProduct({ productId }: Props) {
     resolver: zodResolver(ProductSchema),
   });
 
-  // const { mutate: UpdateProduct, isLoading } = useMutation({
-  //   mutationFn: async (product: Product) => {
-  //     await updateProduct(product, productId);
-  //   },
-  //   onMutate: async (product: Product) => {
-  //     await queryClient.cancelQueries({ queryKey: ["productsList"] });
-  //     const previousProducts = queryClient.getQueriesData(["productsList"]);
-  //   },
-  //   // onError: (err, product, context) => {
-  //   //   queryClient.setQueryData(["productsList"], context?.previousProducts);
-  //   // },
-  //   onSettled: async (data, err, product) => {
-  //     console.log("onSuccess: productsList");
-
-  //     queryClient.invalidateQueries({ queryKey: ["productsList"] });
-
-  //     //router.push("/products/productsList");
-  //     router.back();
-  //   },
-  // });
-
-  //rtk query update product
   const [UpdateProduct, { isLoading, isSuccess }] = useEditMutation();
   if (isSuccess) {
     router.back();

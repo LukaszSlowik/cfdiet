@@ -2,7 +2,6 @@
 
 import { Product } from "@/lib/validators/newProduct";
 import { useDeleteMutation } from "@/redux/features/products/productSlice";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -13,8 +12,6 @@ type Props = {
 };
 
 export default function DeleteProduct({ product, queryparam }: Props) {
-  const queryClient = useQueryClient();
-
   const session = useSession();
   const userid = session.data?.user.id;
   let disableClass =

@@ -37,6 +37,17 @@ const unitsForSelect = {
 export default function MealTable({}: Props) {
   const mealState = useAppSelector(selectMealReverse);
   const dispatchRedux = useAppDispatch();
+  const [isLoadingMealState, setIsLoadingMealState] = useState(false);
+
+  // useEffect(() => {
+  //   setIsLoadingMealState(true);
+  //   const timer = setTimeout(() => {
+  //     setIsLoadingMealState(false);
+  //   }, 500); // adjust delay as needed
+  //   return () => clearTimeout(timer);
+  // }, [mealState]);
+
+  // rest of your code
 
   console.log("mealState:", mealState);
 
@@ -60,12 +71,22 @@ export default function MealTable({}: Props) {
 
   if (!mealState) return <div> Nie wybrano produktów</div>;
 
-  if (isLoading || error)
+  if (error || isLoading)
+    return (
+      <div className="flex flex-col z-[999] border h-screen w-screen justify-start sm:justify-center overflow-hidden ">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+          <span className="sr-only">Ładuje...</span>
+        </div>
+      </div>
+    );
+
+  if (isLoadingMealState)
     return (
       <div className="flex flex-col justify-start sm:justify-center overflow-hidden ">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-          <span className="sr-only">Ładuje...</span>
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
     );
