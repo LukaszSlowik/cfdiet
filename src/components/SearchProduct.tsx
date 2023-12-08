@@ -23,6 +23,7 @@ import {
   Utensils,
   Soup,
   Banana,
+  Loader,
 } from "lucide-react";
 import { RandomSpinnerFoodWrapper, spinners } from "../../data/spinners";
 type Props = {};
@@ -48,7 +49,11 @@ export default function SearchProduct({}: Props) {
   const meal = useAppSelector(selectMeal);
   const [searchQuery, setSearchQuery] = useState("");
   const debauncedSearchTerm = useDebounce(searchQuery, 600);
-  const { data } = useSearchProductsQuery(debauncedSearchTerm);
+  const {
+    data,
+    isLoading: isLoadingSearchProducts,
+    isFetching,
+  } = useSearchProductsQuery(debauncedSearchTerm);
   console.log("searchQuery: ", searchQuery);
   console.log("debauncedSearchTerm: ", debauncedSearchTerm);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,6 +64,9 @@ export default function SearchProduct({}: Props) {
       setSearchQuery("");
     }
   };
+
+  //add use effect to add loading state when waiting for new data from useSearchProductsQuery
+
   const handleAddButton = async (product: any) => {
     setCurrentSpinner(spinners[Math.floor(Math.random() * spinners.length)]);
     setIsLoading(true);
@@ -97,17 +105,22 @@ export default function SearchProduct({}: Props) {
     <>
       <div className="flex flex-col justify-center  items-center w-full sm:2/3 ">
         <form
-          className="flex justify-center content-center  "
+          className="flex justify-center content-center   "
           onSubmit={(event) => event.preventDefault()}
         >
-          <input
-            type="search"
-            value={searchQuery}
-            ref={nameInput}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            className="px-5 py-2 w-5/6 sm:px-5 sm:py-3 my-1 min-w-[200px] focus-within:ring-1  ring-0  rounded-md  outline-none focus:outline-none   placeholder:text-zinc-400"
-            placeholder="szukaj"
-          />
+          <div className="px-5 py-2 relative w-full sm:px-5 ">
+            <input
+              type="search"
+              value={searchQuery}
+              ref={nameInput}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              className=" py-2 min-w-[200px] focus-within:ring-1  ring-0  rounded-md  outline-none focus:outline-none   placeholder:text-zinc-400"
+              placeholder="szukaj"
+            />
+            {(isLoadingSearchProducts || isFetching) && (
+              <Loader className=" absolute  top-[20%]  left-[110%] w-10 h-10 animate-spin-slow   text-blue-800" />
+            )}
+          </div>
         </form>
         <div className=" overflow-y-hidden">
           {data && data?.length === 0 && searchQuery.length > 0 && (

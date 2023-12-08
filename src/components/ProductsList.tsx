@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Plus,
+  Loader2,
 } from "lucide-react";
 import {
   Column,
@@ -55,6 +56,7 @@ import {
   useSearchProductsQuery,
 } from "@/redux/features/products/productSlice";
 import { Product } from "@/lib/validators/newProduct";
+import { Loader } from "lucide-react";
 
 //export const dynamic = 'force-dynamic'    =  export const revalidate = 0
 //export const dynamic = 'force-dynamic'
@@ -66,6 +68,7 @@ export default function ProductsList({}: Props) {
   const search = useSearchParams(); // get parametr from url to predefine search field state
   const searchQueryDefault = search ? (search.get("q") as string) : ""; // if parametr exist then get q parametr
   const [searchQuery, setSearchQuery] = useState<string>(searchQueryDefault); //default from url q parametr
+  const [loadingSearch, setLoadingSearch] = useState<boolean>(false); //default from url q parametr
 
   const [checked, setChecked] = useState(
     search && (search.get("global") as string) === "true" ? false : true
@@ -101,6 +104,7 @@ export default function ProductsList({}: Props) {
     refetch,
     isError,
     isLoading,
+    isFetching,
   } = useFilterProductsQuery({ q: encodedSearchQuery, global: !checked });
 
   const data: Product[] | undefined = React.useMemo(() => products, [products]);
@@ -195,7 +199,7 @@ export default function ProductsList({}: Props) {
     ],
     [debauncedSearchTerm, session?.user.id]
   );
-
+  const displayedData = isLoading ? [] : data;
   const {
     getTableProps,
     getTableBodyProps,
@@ -208,6 +212,7 @@ export default function ProductsList({}: Props) {
     canNextPage,
     canPreviousPage,
     setPageSize,
+
     state,
   } = useTable(
     {
@@ -222,6 +227,7 @@ export default function ProductsList({}: Props) {
   );
 
   const { pageIndex, pageSize } = state;
+
   //console.log("user image: " ,products?.length && (products[0] as any).user.image as string)
   return (
     <section className="">
@@ -246,14 +252,20 @@ export default function ProductsList({}: Props) {
             value={searchQuery || ""}
             ref={nameInput}
             onChange={(event) => {
+              setLoadingSearch(true);
               const encodedSearchQuery = encodeURI(event.target.value);
               //router.push(`/products/productsList?q=${encodedSearchQuery}`);
               setSearchQuery(event.target.value);
+              setLoadingSearch(false);
             }}
             className="px-5 py-1 md:w-5/6 md:px-5 w-full max-w-md  sm:py-3 flex-1  rounded-md  focus:outline-none focus:ring-[1px] focus:ring-green-700 placeholder:text-zinc-400"
             placeholder="Szukaj produktu"
           />
+          {(isFetching || isLoading) && (
+            <Loader className="my-auto w-10 h-10 animate-spin-slow   text-blue-800" />
+          )}
         </form>
+
         <div className="flex flex-col px-8 ">
           <Table {...getTableProps()} className="min-h-[200px] ">
             <TableHeader>

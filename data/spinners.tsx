@@ -43,6 +43,7 @@ export const RandomSpinnerFoodWrapper = ({ children }: Props) => {
         rotate: [0, 360],
         transition: {
           duration: 1.5,
+          //delay: 300,
           repeat: Infinity,
           repeatType: "reverse",
           ease: "easeInOut",

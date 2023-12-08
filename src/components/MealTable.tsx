@@ -1,7 +1,7 @@
 "use client";
 import ReactDOM from "react-dom/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader, Loader2, Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -71,25 +71,16 @@ export default function MealTable({}: Props) {
 
   if (!mealState) return <div> Nie wybrano produktów</div>;
 
-  if (error || isLoading)
-    return (
-      <div className="flex flex-col z-[999] border h-screen w-screen justify-start sm:justify-center overflow-hidden ">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-          <span className="sr-only">Ładuje...</span>
-        </div>
-      </div>
-    );
+  // if (error || isLoading)
+  //   return (
+  //     <div className="flex flex-col z-[999]  h-screen w-screen items-center justify-start  overflow-hidden ">
+  //       <div className="text-center ">
+  //         <Loader className="w-12 h-12  animate-spin-slow   text-blue-800" />
+  //         <span className="sr-only">Ładuje...</span>
+  //       </div>
+  //     </div>
+  //   );z
 
-  if (isLoadingMealState)
-    return (
-      <div className="flex flex-col justify-start sm:justify-center overflow-hidden ">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
   return (
     // <div className="overflow-x-auto w-screen">
     <div className="flex flex-col justify-start sm:justify-center ">
